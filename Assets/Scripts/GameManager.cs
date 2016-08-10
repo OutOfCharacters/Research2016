@@ -4,10 +4,14 @@ using System;
 
 [RequireComponent(typeof(AudioSource))]
 public class GameManager : MonoBehaviour {
+    //object that has tap to place parent script
     public GameObject thingWithTapScript;
-    public GameObject beeScript;
+    //bee mouse or spider object used for typeOfAnimal enum
+    public GameObject scriptType;
+    //used to tell the oben box animation to play
     public GameObject openBoxAnimation;
 
+    //the anxiety and stimulus sound bits
     AudioSource anxietyRating;
     AudioSource stimulusRating;
 
@@ -15,6 +19,7 @@ public class GameManager : MonoBehaviour {
 
     public bool aIsPlaying, sIsPlaying = false;
 
+    //time variables to play messages
     DateTime oldDate;
     DateTime currentDate;
     public bool setOldDate = true;
@@ -23,6 +28,9 @@ public class GameManager : MonoBehaviour {
     bool hasPlayedOnce = false;
 
     public int level = 0;
+
+    public enum typeOfAnimal {ERROR = 0, BEE, MOUSE, SPIDER};
+    public typeOfAnimal tyOfAn;
 
     // Use this for initialization
     void Start () {
@@ -42,6 +50,7 @@ public class GameManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
+
         //if there's no rating message playing
         if (!anxietyRating.isPlaying && !stimulusRating.isPlaying)
         {
@@ -59,13 +68,13 @@ public class GameManager : MonoBehaviour {
                     }
                     break;
                 case 1:
-                    handleLevels();
+                    handleLevels(tyOfAn);
                     break;
                 case 2:
-                    handleLevels();
+                    handleLevels(tyOfAn);
                     break;
                 case 3:
-                    handleLevels();
+                    handleLevels(tyOfAn);
                     break;
 
 
@@ -80,7 +89,7 @@ public class GameManager : MonoBehaviour {
     }
 
 
-    public void handleLevels()
+    public void handleLevels(typeOfAnimal toa)
     {
         //each time the minute increments we ask for the subejects anxiety rating one time, for a total of 5 minutes
         switch (minutes)
@@ -93,72 +102,56 @@ public class GameManager : MonoBehaviour {
                 break;
             case 3:
                 handleMinutes();
-                break;
-            case 4:
-                handleMinutes();
-                break;
-            case 5:
-                handleMinutes();
                 //Turn off the box and prepare for the next stage
                 TurnOffBox();
                 break;
         }
+        switch (toa)
+        {
+            case typeOfAnimal.ERROR:
+                Debug.Log("There is a problem with typeOfAnimal");
+                break;
+            case typeOfAnimal.BEE:
+                BeeAI();
+                break;
+            case typeOfAnimal.MOUSE:
+                GroundAI();
+                break;
+            case typeOfAnimal.SPIDER:
+                GroundAI();
+                break;
+        }
 
-
-
-        //
-        //
-        //
-        //Add switch statement for different animal types - mouse, bee, spider
-        //
-        //
-        //
-        //
+    }
+    void BeeAI()
+    {
         if (level == 1)
         {
         }
         else if (level == 2)
         {
             openBoxAnimation.GetComponent<Animator>().SetTrigger("Open");
-            beeScript.GetComponent<MouseAI>().cWaypoint = 0;
-            beeScript.GetComponent<MouseAI>().currentWaypoints = beeScript.GetComponent<MouseAI>().waypointsIntermediate;
-            beeScript.GetComponent<MouseAI>().currentWaypoints[beeScript.GetComponent<MouseAI>().cWaypoint].gameObject.tag = "intermediate current";
-            beeScript.GetComponent<MouseAI>().diff = LevelState.State.INTERMEDIATE;
-            beeScript.GetComponent<MouseAI>().firstCollision = true;
+            scriptType.GetComponent<beeAI>().cWaypoint = 0;
+            scriptType.GetComponent<beeAI>().currentWaypoints = scriptType.GetComponent<beeAI>().waypointsIntermediate;
+            scriptType.GetComponent<beeAI>().currentWaypoints[scriptType.GetComponent<beeAI>().cWaypoint].gameObject.tag = "intermediate current";
+            scriptType.GetComponent<beeAI>().diff = LevelState.State.INTERMEDIATE;
+            scriptType.GetComponent<beeAI>().firstCollision = true;
         }
         else if (level == 3)
         {
-            beeScript.GetComponent<MouseAI>().cWaypoint = 0;
-            beeScript.GetComponent<MouseAI>().currentWaypoints = beeScript.GetComponent<MouseAI>().waypointsAdvanced;
-            beeScript.GetComponent<MouseAI>().currentWaypoints[beeScript.GetComponent<MouseAI>().cWaypoint].gameObject.tag = "advanced current";
-            beeScript.GetComponent<MouseAI>().diff = LevelState.State.ADVANCED;
-            beeScript.GetComponent<MouseAI>().firstCollision = true;
+            scriptType.GetComponent<beeAI>().cWaypoint = 0;
+            scriptType.GetComponent<beeAI>().currentWaypoints = scriptType.GetComponent<beeAI>().waypointsAdvanced;
+            scriptType.GetComponent<beeAI>().currentWaypoints[scriptType.GetComponent<beeAI>().cWaypoint].gameObject.tag = "advanced current";
+            scriptType.GetComponent<beeAI>().diff = LevelState.State.ADVANCED;
+            scriptType.GetComponent<beeAI>().firstCollision = true;
         }
-
-
-        //if (level == 1)
-        //{
-        //}
-        //else if (level == 2)
-        //{
-        //    openBoxAnimation.GetComponent<Animator>().SetTrigger("Open");
-        //    beeScript.GetComponent<beeAI>().cWaypoint = 0;
-        //    beeScript.GetComponent<beeAI>().currentWaypoints = beeScript.GetComponent<beeAI>().waypointsIntermediate;
-        //    beeScript.GetComponent<beeAI>().currentWaypoints[beeScript.GetComponent<beeAI>().cWaypoint].gameObject.tag = "intermediate current";
-        //    beeScript.GetComponent<beeAI>().diff = LevelState.State.INTERMEDIATE;
-        //    beeScript.GetComponent<beeAI>().firstCollision = true;
-        //}
-        //else if (level == 3)
-        //{
-        //    beeScript.GetComponent<beeAI>().cWaypoint = 0;
-        //    beeScript.GetComponent<beeAI>().currentWaypoints = beeScript.GetComponent<beeAI>().waypointsAdvanced;
-        //    beeScript.GetComponent<beeAI>().currentWaypoints[beeScript.GetComponent<beeAI>().cWaypoint].gameObject.tag = "advanced current";
-        //    beeScript.GetComponent<beeAI>().diff = LevelState.State.ADVANCED;
-        //    beeScript.GetComponent<beeAI>().firstCollision = true;
-        //}
-
-
-
+    }
+    void GroundAI()
+    {
+        if (level == 2)
+            openBoxAnimation.GetComponent<Animator>().SetTrigger("Open");
+        else if (level == 3)
+            scriptType.transform.localPosition = new Vector3(0, 0, -1.5f);
     }
 
     //if recording has not yet been played this minute, play it

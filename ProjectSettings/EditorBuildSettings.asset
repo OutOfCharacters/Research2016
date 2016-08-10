@@ -7,5 +7,13 @@ EditorBuildSettings:
   m_Scenes:
   - enabled: 0
     path: Assets/Main.unity
-  - enabled: 1
+  - enabled: 0
     path: Assets/MouseScene.unity
+  - enabled: 1
+    path: Assets/Scenes/Main.unity
+  - enabled: 1
+    path: Assets/Scenes/MouseScene.unity
+  - enabled: 1
+    path: Assets/Scenes/SpiderScene.unity
+  - enabled: 1
+    path: Assets/Scenes/BeeScene.unity

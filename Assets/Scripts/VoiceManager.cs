@@ -8,7 +8,7 @@ public class VoiceManager : MonoBehaviour {
     //Internal reference to a keywordRecognizer.
     public bool toContinue = false;
     private string response;
-    private string[] oneToOneHundred = new string[100];
+    private string[] oneToOneHundred = new string[102];
     private ArrayList responseDirectory = new ArrayList();
     private KeywordRecognizer kr;
 
@@ -41,6 +41,8 @@ public class VoiceManager : MonoBehaviour {
             toContinue = true;
             //add the responses and confidence levels to their arraylists
             addToResponseDirectory(args.text);
+            if(args.text.Equals("main menu"))
+                UnityEngine.SceneManagement.SceneManager.LoadScene("Main");
         }
         //otherwise...
         else
@@ -53,12 +55,15 @@ public class VoiceManager : MonoBehaviour {
     //creates an array of strings that has the numbers "one" to "one-hundred"
     private void createString()
     {
-        for (int i = 0; i < oneToOneHundred.Length; i++)
+        for (int i = 0; i < oneToOneHundred.Length - 2; i++)
         {
             oneToOneHundred[i] = i.ToString();
         }
+        //it doesn't currently deal with the "try again" situation, I guess I can just add it to the end of the oneToOnehundredArray..
+        oneToOneHundred[oneToOneHundred.Length - 2] = "try again";
+        oneToOneHundred[oneToOneHundred.Length - 1] = "main menu";
     }
-    //it doesn't currently deal with the "try again" situation, I guess I can just add it to the end of the oneToOnehundredArray..
+   
 
     private void addToResponseDirectory(string toAdd)
     {
@@ -70,4 +75,5 @@ public class VoiceManager : MonoBehaviour {
     {
         //put responseDirectory on the screen for the psychologist to record.
     }
+
 }

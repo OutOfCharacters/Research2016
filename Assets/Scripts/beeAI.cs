@@ -3,34 +3,44 @@ using System.Collections;
 
 public class beeAI : MonoBehaviour {
     
+    //The difficulty level we are on
     public LevelState.State diff;
 
+    //the different waypoint arrays for beginning intermediate and advanced levels
     public Transform[] waypointsBeginner;
     public Transform[] waypointsIntermediate;
     public Transform[] waypointsAdvanced;
 
+    //the current waypont point array we are on
     public Transform[] currentWaypoints;
+    //the current waypoint
     public int cWaypoint = 0;
 
+    //the waypoint's position
     private Vector3 targetPos;
+    //the direction we are moving in
     public Vector3 moveDirection;
 
+    //if we hit a wall
     public bool hitEnvironment;
+    //direction we were going when we hit a wall
     public Vector3 toReverse;
+    //counts down once moving in the opposite direction of the wall, at zero it goes back into its normal randomized movement
     public int counter;
 
+    //deals with collisions
     string tagLevel;
+    //we will start to ignore a collision with the waypoint if it has already collided once
     public bool firstCollision;
+    //check if it has collided
     public bool checkForCollision;
 
     public Transform waypoint;
 
-
-
     // Use this for initialization
     void Start()
     {
-        
+        //inital difficulty is beginner
         diff = LevelState.State.BEGINNER;
         currentWaypoints = waypointsBeginner;
         waypoint = currentWaypoints[0];
@@ -41,18 +51,18 @@ public class beeAI : MonoBehaviour {
     }
 	
 	void FixedUpdate () {
+        //if we do not need to reverse anything
         if (counter == 0)
-        {
-            Move(.2f);
-        }
+            //just move normally
+            Move();
         else if (counter > 0)
-        {
-            Move(.2f, toReverse);
-        }
-        
+            //move in reverse
+            Move(toReverse);
     }
-
-    void Move(float accel)
+    /// <summary>
+    ///  Moves the bee
+    /// </summary>
+    void Move()
     {
         //Set target Position to waypoint position
         targetPos = currentWaypoints[cWaypoint].position;
@@ -61,16 +71,22 @@ public class beeAI : MonoBehaviour {
         //Set direction to move towards
         moveDirection = (targetPos - transform.position + toReverse * 1f).normalized;
         //Move's the object
-        transform.Translate(moveDirection * Time.deltaTime * accel, Space.World);
+        transform.Translate(moveDirection * Time.deltaTime * .2f, Space.World);
     }
-    void Move(float accel, Vector3 reverseVector)
+    /// <summary>
+    /// Moves the bee in reverse
+    /// </summary>
+    /// <param name="reverseVector"> 
+    /// stores the vector it was going in when it crashed into the wall
+    /// </param>
+    void Move(Vector3 reverseVector)
     {
         //Set target Position to waypoint position
         targetPos = currentWaypoints[cWaypoint].position;
         //Set direction to move towards
         moveDirection = (targetPos - transform.position + toReverse * 2f).normalized;
         //moves the object the opposite direction of the wall
-        transform.Translate((-reverseVector * 2f).normalized * Time.deltaTime * accel, Space.World);
+        transform.Translate((-reverseVector * 2f).normalized * Time.deltaTime * .2f, Space.World);
         counter--;
     }
 
@@ -78,12 +94,13 @@ public class beeAI : MonoBehaviour {
     /// <summary>
     /// enters a collider with a certain tag at a certain state
     /// </summary>
-    /// <param name="other"></param>
+    /// <param name="other">
+    /// the collider we are entering
+    /// </param>
     void OnTriggerEnter(Collider other)
     {
         switch (diff)
         {
-            //is at the beginner state
             case LevelState.State.BEGINNER:
                 //if the collider entered is the waypoint we want, go to the next one
                 //if the collider entered is any other way point, do nothing
@@ -102,22 +119,22 @@ public class beeAI : MonoBehaviour {
     /// <summary>
     /// Handles the beginner level AI waypoints
     /// </summary>
-    /// <param name="other"></param>
+    /// <param name="other">
+    /// what object we collided with
+    /// </param>
     void BeginnerState(Collider other)
     {
         if (other.gameObject.tag == "beginner current")
         {
+            //it is now no longer the first collision
             if (firstCollision)
-            {
                 firstCollision = false;
-            }
             //set current waypoint to be ignored
             other.gameObject.tag = "beginner removed";
 
             //make sure you're not at the last waypoint
             if (cWaypoint + 1 < currentWaypoints.Length)
             {
-                
                 //start moving towards the next waypoint
                 cWaypoint++;
                 //set waypoint for AI to lookAt
@@ -147,15 +164,15 @@ public class beeAI : MonoBehaviour {
     /// Handles the Intermediate Level AI waypoints
     /// 
     /// </summary>
-    /// <param name="other"></param>
+    /// <param name="other">
+    /// the object we collided with
+    /// </param>
     void IntermediateState(Collider other)
     {
         if (other.gameObject.tag == "intermediate current")
         {
             if (firstCollision)
-            {
                 firstCollision = false;
-            }
             //set current waypoint to be ignored
             other.gameObject.tag = "intermediate removed";
 
@@ -188,15 +205,15 @@ public class beeAI : MonoBehaviour {
     /// <summary>
     /// Handles Adanved AI waypoints
     /// </summary>
-    /// <param name="other"></param>
+    /// <param name="other">
+    /// the object we collided with
+    /// </param>
     void AdvancedState(Collider other)
     {
         if (other.gameObject.tag == "advanced current")
         {
             if (firstCollision)
-            {
                 firstCollision = false;
-            }
             //set current waypoint to be ignored
             other.gameObject.tag = "advanced removed";
 

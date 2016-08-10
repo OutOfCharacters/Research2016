@@ -13,14 +13,8 @@ public class Wand : MonoBehaviour {
 
     float wanderAngle;
     public float angleChange;
+
     //------------------------------
-
-    float theta_scale = 0.01f;        //Set lower to add more points
-    int size; //Total number of points in circle
-    
-    LineRenderer lineRenderer;
-    //---------------------------------
-
     public Transform wall1;
     public Transform wall2;
     public Transform wall3;
@@ -29,6 +23,7 @@ public class Wand : MonoBehaviour {
     counterForceObject counterForce;
 
     Vector3 forceToAdd;
+    //----------------------------------
 
     void Awake()
     {
@@ -37,12 +32,22 @@ public class Wand : MonoBehaviour {
     // Use this for initialization
     void Start () {
         rb = GetComponent<Rigidbody>();
-        transform.rotation = Quaternion.Euler(0, 0, 0);
+        
 	}
+    void ChangeAnimSpeed()
+    {
+        Animator anim = GetComponent<Animator>();
+        anim.speed = rb.velocity.magnitude * 10 ;
+        
+    }
+
 
     void FixedUpdate()
     {
         wander();
+        WallForce();
+        RotateToVelocity(50f);
+        ChangeAnimSpeed();
     }
 
     void wander()
@@ -54,14 +59,16 @@ public class Wand : MonoBehaviour {
   
         forceToAdd = drawWanderForce();             //sets the force to be of the correct magnitude and in the direction of the wander angle
         StartCoroutine(AdjustWallForce());          //Starts calculating the force so that the spider does not hit the wall 
-        rb.AddForce(forceToAdd);                    //adds the force
+        forceToAdd.y = 0;
+        rb.AddForce(forceToAdd * 2f);               //adds the force
         
-
+    }
+    void WallForce()
+    {
         Vector3 counterToAdd = addCounterForce();   //puts the force in the right direction
         counterToAdd *= counterForce.getCF();       //adjusts the magnitude
-        Debug.Log(counterToAdd.ToString("F4"));
+        counterToAdd.y = 0;
         rb.AddForce(-counterToAdd);
-
     }
 
 
@@ -96,7 +103,8 @@ public class Wand : MonoBehaviour {
         vector.x = Mathf.Cos(angle) * len;
         vector.z = Mathf.Sin(angle) * len;
     }
-
+    
+    //return the force to be used for wandering
     Vector3 drawWanderForce()
     {
         Vector3 wanderForce;
@@ -105,16 +113,12 @@ public class Wand : MonoBehaviour {
         return wanderForce;
     }
 
+    //add forces from walls
     IEnumerator AdjustWallForce()
     {
         while (true)
         {
             // one for each wall, wall is target.position
-            //float distanceToTarget1 = Vector3.Distance(transform.localPosition, wall1.localPosition);
-            //float distanceToTarget2 = Vector3.Distance(transform.localPosition, wall2.localPosition);
-            //float distanceToTarget3 = Vector3.Distance(transform.localPosition, wall3.localPosition);
-            //float distanceToTarget4 = Vector3.Distance(transform.localPosition, wall4.localPosition);
-
             float distanceToTarget1 = transform.localPosition.x - wall1.localPosition.x;
             float distanceToTarget2 = -transform.localPosition.x + wall2.localPosition.x;
             float distanceToTarget3 = transform.localPosition.z - wall3.localPosition.z;
@@ -122,26 +126,27 @@ public class Wand : MonoBehaviour {
 
 
 
-            if (distanceToTarget1 < .03f)
+            if (distanceToTarget1 < .05f)
             {
-                // if we get within 1 unit of a wall
-                distanceToTarget1 = .03f;
+                // if we get within .03 units of a wall
+                distanceToTarget1 = .05f;
+                //flip the wander force
+                forceToAdd = -forceToAdd; 
+            }
+            if (distanceToTarget2 < .05f)
+            {
+                distanceToTarget2 = .05f;
                 forceToAdd = -forceToAdd;
             }
-            if (distanceToTarget2 < .03f)
+            if (distanceToTarget3 < .05f)
             {
-                distanceToTarget2 = .03f;
-                forceToAdd = -forceToAdd;
-            }
-            if (distanceToTarget3 < .03f)
-            {
-                distanceToTarget3 = .03f;
+                distanceToTarget3 = .05f;
                 forceToAdd = -forceToAdd;
             }
 
-            if (distanceToTarget4 < .03f)
+            if (distanceToTarget4 < .05f)
             {
-                distanceToTarget4 = .03f;
+                distanceToTarget4 = .05f;
                 forceToAdd = -forceToAdd;
             }
 
@@ -165,15 +170,15 @@ public class Wand : MonoBehaviour {
 
             counterForce = new counterForceObject(float.MinValue, 0);
 
-            //Add all the forces to an arrayList
-            ArrayList counterForces = new ArrayList();
-            counterForces.Add(counterForce1);
-            counterForces.Add(counterForce2);
-            counterForces.Add(counterForce3);
-            counterForces.Add(counterForce4);
+            //Add all the forces to an array
+            counterForceObject[] arr = new counterForceObject[4];
+            arr[0] = counterForce1;
+            arr[1] = counterForce2;
+            arr[2] = counterForce3;
+            arr[3] = counterForce4;
 
             //find the lowest
-            foreach (counterForceObject cF in counterForces)
+            foreach (counterForceObject cF in arr)
             {
                 if (cF.getCF() > counterForce.getCF())
                     //use the lowest value as the modifier to make the spider turn around more sharply
@@ -199,6 +204,29 @@ public class Wand : MonoBehaviour {
             return new Vector3(0, 0, -1);
         else //should not happen
             return new Vector3(0, 1, 0);
+    }
+    //Rotate to face the direction it's moving
+    void RotateToVelocity(float turnSpeed)
+    {
+        Vector3 dir;
+        //model imported facing backwards so we set this to be negative so it faces the right way
+        dir = new Vector3(-rb.velocity.x, 0f, -rb.velocity.z);
+        //don't rotate if the velocity is 0
+        if (dir.magnitude > 0)
+        {
+            //dir.x = dir.x / 2;
+            //dir.z = dir.z / 2;
+            Quaternion dirQ = Quaternion.LookRotation(dir); 
+            Quaternion slerp = Quaternion.Slerp(transform.rotation, dirQ, dir.magnitude * turnSpeed * Time.deltaTime);
+            rb.MoveRotation(slerp);
+        }
+    }
+
+    //decelerates the spider to 0, simulating normal stopping and starting movement of spiders
+
+    void StopInPlace()
+    {
+        rb.AddForce(-rb.velocity, ForceMode.Impulse);
     }
 
 
