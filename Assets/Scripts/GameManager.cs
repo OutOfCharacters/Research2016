@@ -30,6 +30,9 @@ public class GameManager : MonoBehaviour {
     WaitForSeconds thirty;
     float messageCounter = 0f;
 
+    bool hasBeenDone = false;
+    bool hasBeenDone2 = false;
+
     // Use this for initialization
     void Start () {
         //gets the audio sources
@@ -200,25 +203,33 @@ public class GameManager : MonoBehaviour {
         }
         else if (level == 2)
         {
-            openBoxAnimation.GetComponent<Animator>().SetTrigger("Open");
-            scriptType.GetComponent<beeAI>().cWaypoint = 0;
-            scriptType.GetComponent<beeAI>().currentWaypoints = scriptType.GetComponent<beeAI>().waypointsIntermediate;
-            scriptType.GetComponent<beeAI>().currentWaypoints[scriptType.GetComponent<beeAI>().cWaypoint].gameObject.tag = "intermediate current";
-            scriptType.GetComponent<beeAI>().diff = LevelState.State.INTERMEDIATE;
-            scriptType.GetComponent<beeAI>().firstCollision = true;
+            if (!hasBeenDone)
+            {
+                openBoxAnimation.GetComponent<Animator>().SetTrigger("Open");
+                scriptType.GetComponent<beeAI>().cWaypoint = 0;
+                scriptType.GetComponent<beeAI>().currentWaypoints = scriptType.GetComponent<beeAI>().waypointsIntermediate;
+                scriptType.GetComponent<beeAI>().currentWaypoints[scriptType.GetComponent<beeAI>().cWaypoint].gameObject.tag = "intermediate current";
+                scriptType.GetComponent<beeAI>().diff = LevelState.State.INTERMEDIATE;
+                scriptType.GetComponent<beeAI>().firstCollision = true;
+                hasBeenDone = true;
+            }
         }
         else if (level == 3)
         {
-            scriptType.GetComponent<beeAI>().cWaypoint = 0;
-            scriptType.GetComponent<beeAI>().currentWaypoints = scriptType.GetComponent<beeAI>().waypointsAdvanced;
-            scriptType.GetComponent<beeAI>().currentWaypoints[scriptType.GetComponent<beeAI>().cWaypoint].gameObject.tag = "advanced current";
-            scriptType.GetComponent<beeAI>().diff = LevelState.State.ADVANCED;
-            scriptType.GetComponent<beeAI>().firstCollision = true;
+            if (!hasBeenDone2)
+            {
+                scriptType.GetComponent<beeAI>().cWaypoint = 0;
+                scriptType.GetComponent<beeAI>().currentWaypoints = scriptType.GetComponent<beeAI>().waypointsAdvanced;
+                scriptType.GetComponent<beeAI>().currentWaypoints[scriptType.GetComponent<beeAI>().cWaypoint].gameObject.tag = "advanced current";
+                scriptType.GetComponent<beeAI>().diff = LevelState.State.ADVANCED;
+                scriptType.GetComponent<beeAI>().firstCollision = true;
+                hasBeenDone2 = true;
+            }
         }
         else if (level == 4)
         {
+            StartCoroutine(LinkSounds(stimulusRating, thanks));
             vm.showList();
-            thanks.Play();
         }
     }
 
@@ -231,18 +242,31 @@ public class GameManager : MonoBehaviour {
             openBoxAnimation.GetComponent<Animator>().SetTrigger("Open");
         else if (level == 3)
         {
-            scriptType.transform.localPosition = new Vector3(0, 0, -1.5f);
-            //check if we are a mouse or spider and tell the script we've reached level 3 so we no longer want to add force from the wall
-            if (scriptType.GetComponent<WandMouse>() != null)
-                scriptType.GetComponent<WandMouse>().notLevel3 = false;
-            else if (scriptType.GetComponent<WandSpider>() != null)
-                scriptType.GetComponent<WandSpider>().notLevel3 = false;
+            if (!hasBeenDone)
+            {
+                scriptType.transform.localPosition = new Vector3(0, 0, -1.5f);
+                //check if we are a mouse or spider and tell the script we've reached level 3 so we no longer want to add force from the wall
+                if (scriptType.GetComponent<WandMouse>() != null)
+                    scriptType.GetComponent<WandMouse>().notLevel3 = false;
+                else if (scriptType.GetComponent<WandSpider>() != null)
+                    scriptType.GetComponent<WandSpider>().notLevel3 = false;
+                hasBeenDone = true;
+            }
+
         }
         else if (level == 4)
         {
+            StartCoroutine(LinkSounds(stimulusRating, thanks));
             vm.showList();
-            thanks.Play();
         }
+    }
+    private IEnumerator LinkSounds(AudioSource one, AudioSource two)
+    {
+        isAnythingPlaying(one);
+        yield return new WaitForSeconds(one.clip.length);
+        isAnythingPlaying(two);
+        yield return new WaitForSeconds(two.clip.length);
+
     }
 
     /// <summary>
