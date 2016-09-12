@@ -215,6 +215,11 @@ public class GameManager : MonoBehaviour {
             scriptType.GetComponent<beeAI>().diff = LevelState.State.ADVANCED;
             scriptType.GetComponent<beeAI>().firstCollision = true;
         }
+        else if (level == 4)
+        {
+            vm.showList();
+            thanks.Play();
+        }
     }
 
     /// <summary>
@@ -232,6 +237,11 @@ public class GameManager : MonoBehaviour {
                 scriptType.GetComponent<WandMouse>().notLevel3 = false;
             else if (scriptType.GetComponent<WandSpider>() != null)
                 scriptType.GetComponent<WandSpider>().notLevel3 = false;
+        }
+        else if (level == 4)
+        {
+            vm.showList();
+            thanks.Play();
         }
     }
 

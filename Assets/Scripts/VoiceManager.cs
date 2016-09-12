@@ -122,7 +122,7 @@ public class VoiceManager : MonoBehaviour {
     /// <summary>
     /// Loads the end scene which displays the data
     /// </summary>
-    private void showList()
+    public void showList()
     {
         //put responseDirectory on the screen for the psychologist to record.
         //modify a gameobject with dont destroy onload to store all data and display it in a new scene
