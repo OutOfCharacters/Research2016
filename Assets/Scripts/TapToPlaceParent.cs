@@ -32,8 +32,10 @@ public class TapToPlaceParent : MonoBehaviour
             box.transform.position = gameObject.transform.position;
             box.transform.rotation = gameObject.transform.rotation;
 
-            //disable the placeholder
-            gameObject.SetActive(false);
+            ////disable the placeholder
+            //gameObject.SetActive(false);
+
+
             //no longer the first pass> this is accessed in spatialmapping to remove the visualmeshes
             //also accessed by the game manager to start it's minute counting once the box is created
             firstPass = false;

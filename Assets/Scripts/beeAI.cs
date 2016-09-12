@@ -51,6 +51,9 @@ public class beeAI : MonoBehaviour {
     }
 	
 	void FixedUpdate () {
+        //slerp to waypoint
+        lookAtTarget();
+
         //if we do not need to reverse anything
         if (counter == 0)
             //just move normally
@@ -59,6 +62,7 @@ public class beeAI : MonoBehaviour {
             //move in reverse
             Move(toReverse);
     }
+
     /// <summary>
     ///  Moves the bee
     /// </summary>
@@ -73,6 +77,7 @@ public class beeAI : MonoBehaviour {
         //Move's the object
         transform.Translate(moveDirection * Time.deltaTime * .2f, Space.World);
     }
+
     /// <summary>
     /// Moves the bee in reverse
     /// </summary>
@@ -202,6 +207,7 @@ public class beeAI : MonoBehaviour {
             counter = 6;
         }
     }
+
     /// <summary>
     /// Handles Adanved AI waypoints
     /// </summary>
@@ -244,4 +250,14 @@ public class beeAI : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Rotates the bee without using the y vector
+    /// </summary>
+    void lookAtTarget()
+    {
+        Vector3 temp = new Vector3(waypoint.localPosition.x, 0, waypoint.localPosition.z);
+        Vector3 temp2 = new Vector3(transform.localPosition.x, 0, transform.localPosition.z);
+        Quaternion rotation = Quaternion.LookRotation(temp - temp2);
+        transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime);
+    }
 }

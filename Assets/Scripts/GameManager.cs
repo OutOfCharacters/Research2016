@@ -11,105 +11,171 @@ public class GameManager : MonoBehaviour {
     //used to tell the oben box animation to play
     public GameObject openBoxAnimation;
 
-    //the anxiety and stimulus sound bits
-    AudioSource anxietyRating;
-    AudioSource stimulusRating;
+    //the sound bits
+    AudioSource anxietyRating, stimulusRating, beeAttention, crawlingMouse, crawlingSpider, 
+        flyingBee, mouseAttention, mouseColor, mouseSqueaking, repeat, spiderAttention, 
+        spiderColor, thanks, yellowBlack;
 
     AudioSource[] aSources;
 
-    public bool aIsPlaying, sIsPlaying = false;
-
-    //time variables to play messages
-    DateTime oldDate;
-    DateTime currentDate;
-    public bool setOldDate = true;
-    int minutes;
-    int currentMin;
-    bool hasPlayedOnce = false;
+    // anxiety rating message is playing, stimulus rating message is playing
+    public bool aIsPlaying, sIsPlaying = false; 
 
     public int level = 0;
 
     public enum typeOfAnimal {ERROR = 0, BEE, MOUSE, SPIDER};
     public typeOfAnimal tyOfAn;
 
+    public VoiceManager vm;
+    WaitForSeconds thirty;
+    float messageCounter = 0f;
+
     // Use this for initialization
     void Start () {
         //gets the audio sources
         aSources = GetComponents<AudioSource>();
-
         //sets the audio sources
         anxietyRating = aSources[0];
         stimulusRating = aSources[1];
+        beeAttention = aSources[2];
+        crawlingMouse = aSources[3];
+        crawlingSpider = aSources[4];
+        flyingBee = aSources[5];
+        mouseAttention = aSources[6];
+        mouseColor = aSources[7];
+        mouseSqueaking = aSources[8];
+        repeat = aSources[9];
+        spiderAttention = aSources[10];
+        spiderColor = aSources[11];
+        thanks = aSources[12];
+        yellowBlack = aSources[13];
 
-        PlayAnxietyRating();
+        isAnythingPlaying(anxietyRating);
 
         //one more to add for the "try again" recording
+
+        thirty = new WaitForSeconds(30f);
+        StartCoroutine(TimeHandler());
+        
     }
 	
-	
+    /// <summary>
+    /// keeps track of when to call message handler and ask for anxiety rating
+    /// </summary>
+    /// <returns></returns>
+	IEnumerator TimeHandler()
+    {
+        //yield return null;
+        //run once in the background
+        while (true)
+        {
+            //every minute we ask for anxiety rating
+            if (!isAnythingPlaying(anxietyRating))
+                vm.StartListening();
+            yield return thirty;
+            messageCounter += 30f;
+            //every other 30 seconds we play a recording
+            MessageHandler(messageCounter);
+
+            yield return thirty;
+            messageCounter += 30f;
+            //reset the message handler to 0
+            if (messageCounter == 180)
+                messageCounter = 0;
+        }
+    }
+    
+    /// <summary>
+    /// handles the messages that need to be played every minute (starting at 0:30)
+    /// </summary>
+    /// <param name="counter"></param>
+    void MessageHandler(float counter)
+    {
+        if (counter == 30)
+        {
+            if (tyOfAn == typeOfAnimal.BEE)
+                isAnythingPlaying(beeAttention);
+            else if (tyOfAn == typeOfAnimal.MOUSE)
+                isAnythingPlaying(mouseAttention);
+            else if (tyOfAn == typeOfAnimal.SPIDER)
+                isAnythingPlaying(spiderAttention);
+            else
+                Debug.Log("GameManager TimeHandler got no animal type");
+        }
+        else if (counter == 90)
+        {
+            if (tyOfAn == typeOfAnimal.BEE)
+                isAnythingPlaying(yellowBlack);
+            else if (tyOfAn == typeOfAnimal.MOUSE)
+                isAnythingPlaying(mouseColor);
+            else if (tyOfAn == typeOfAnimal.SPIDER)
+                isAnythingPlaying(spiderColor);
+            else
+                Debug.Log("GameManager TimeHandler got no animal type");
+        }
+        else if (counter == 150)
+        {
+            if (tyOfAn == typeOfAnimal.BEE)
+                isAnythingPlaying(flyingBee);
+            else if (tyOfAn == typeOfAnimal.MOUSE)
+                isAnythingPlaying(crawlingMouse);
+            else if (tyOfAn == typeOfAnimal.SPIDER)
+                isAnythingPlaying(crawlingSpider);
+            else
+                Debug.Log("GameManager TimeHandler got no animal type");
+        }
+    }
+
 	// Update is called once per frame
 	void Update ()
     {
-
+        if(vm.toContinue == true)
+        {
+            level++;
+            vm.toContinue = false;
+        }
         //if there's no rating message playing
-        if (!anxietyRating.isPlaying && !stimulusRating.isPlaying)
+        if (!isAnythingPlaying())
         {
             //controls what we do each level
             switch (level)
             {
                 case 0:
                     //if we've created the box
-                    if (setOldDate == true && thingWithTapScript.GetComponent<TapToPlaceParent>().firstPass == false)
+                    if (thingWithTapScript.GetComponent<TapToPlaceParent>().firstPass == false)
                     {
-                        //start calulating time since this moment
-                        oldDate = System.DateTime.Now;
-                        //move on
                         level++;
                     }
                     break;
                 case 1:
-                    handleLevels(tyOfAn);
+                    HandleLevels(tyOfAn);
                     break;
                 case 2:
-                    handleLevels(tyOfAn);
+                    HandleLevels(tyOfAn);
                     break;
                 case 3:
-                    handleLevels(tyOfAn);
+                    HandleLevels(tyOfAn);
                     break;
-
-
-
+                case 4:
+                    isAnythingPlaying(stimulusRating);
+                    break;
+                case 5:
+                    isAnythingPlaying(thanks);
+                    break;
             }
         }
-        //update minutes
-        currentDate = System.DateTime.Now;
-        //number of minutes since box was created
-        minutes = currentDate.Minute - oldDate.Minute;
-
     }
 
-
-    public void handleLevels(typeOfAnimal toa)
+    /// <summary>
+    /// switch statement handling different animals
+    /// </summary>
+    /// <param name="toa"></param>
+    public void HandleLevels(typeOfAnimal toa)
     {
-        //each time the minute increments we ask for the subejects anxiety rating one time, for a total of 5 minutes
-        switch (minutes)
-        {
-            case 1:               
-                handleMinutes();
-                break;
-            case 2:
-                handleMinutes();
-                break;
-            case 3:
-                handleMinutes();
-                //Turn off the box and prepare for the next stage
-                TurnOffBox();
-                break;
-        }
         switch (toa)
         {
             case typeOfAnimal.ERROR:
-                Debug.Log("There is a problem with typeOfAnimal");
+                Debug.Log("There is a problem with HandleLevels");
                 break;
             case typeOfAnimal.BEE:
                 BeeAI();
@@ -123,6 +189,10 @@ public class GameManager : MonoBehaviour {
         }
 
     }
+
+    /// <summary>
+    /// handles function of waypoints for bee and box animation
+    /// </summary>
     void BeeAI()
     {
         if (level == 1)
@@ -146,72 +216,53 @@ public class GameManager : MonoBehaviour {
             scriptType.GetComponent<beeAI>().firstCollision = true;
         }
     }
+
+    /// <summary>
+    /// handles box animation and placement of mouse on level 3
+    /// </summary>
     void GroundAI()
     {
         if (level == 2)
             openBoxAnimation.GetComponent<Animator>().SetTrigger("Open");
         else if (level == 3)
+        {
             scriptType.transform.localPosition = new Vector3(0, 0, -1.5f);
-    }
-
-    //if recording has not yet been played this minute, play it
-    void handleMinutes()
-    {
-        //if the recording has been played and the previous minute is not the current minute
-        if (hasPlayedOnce && currentMin != minutes)
-        {
-            hasPlayedOnce = false;
+            //check if we are a mouse or spider and tell the script we've reached level 3 so we no longer want to add force from the wall
+            if (scriptType.GetComponent<WandMouse>() != null)
+                scriptType.GetComponent<WandMouse>().notLevel3 = false;
+            else if (scriptType.GetComponent<WandSpider>() != null)
+                scriptType.GetComponent<WandSpider>().notLevel3 = false;
         }
-        //if the anxiety rating has not been played this minute
-        if (!hasPlayedOnce)
+    }
+
+    /// <summary>
+    /// loops though the audio sources and checks if anything is playing
+    /// </summary>
+    /// <returns></returns>
+    public bool isAnythingPlaying()
+    {
+        for (int ii = 0; ii < aSources.Length; ii++)
         {
-
-            //play it
-            PlayAnxietyRating();
-            //it has now been played
-            hasPlayedOnce = true;
-            //record what minute it was played
-            currentMin = minutes;
+            if (aSources[ii].isPlaying)
+                return true;
         }
-
+        return false;
     }
 
-
-    void TurnOffBox()
+    /// <summary>
+    /// overload plays the given audiosource if nothing is playing
+    /// </summary>
+    /// <returns></returns>
+    public bool isAnythingPlaying(AudioSource toPlay)
     {
-        //if the anxiety rating message is done playing
-        if (!anxietyRating.isPlaying && !stimulusRating.isPlaying)
+        for (int ii = 0; ii < aSources.Length; ii++)
         {
-            //allow us to go to the next level
-            level++;
-            //reset the minute counter so this is not called more than once
-            oldDate = System.DateTime.Now;
-            //play the stimulus rating message
-            PlayStimulusRating();
-
-            //turn off the box
-            ////
-            //
-            //
-            //
-            //
-            //
+            if (aSources[ii].isPlaying)
+                return true;
         }
-
+        toPlay.Play();
+        return false;
     }
 
-
-    //plays the anxiety rating message
-    public void PlayAnxietyRating()
-    {
-        if (!anxietyRating.isPlaying && !stimulusRating.isPlaying)
-            anxietyRating.Play();
-    }
-    //plays the stimulus rating message
-    public void PlayStimulusRating()
-    {
-        if (!anxietyRating.isPlaying && !stimulusRating.isPlaying)
-            stimulusRating.Play();
-    }
 
 }

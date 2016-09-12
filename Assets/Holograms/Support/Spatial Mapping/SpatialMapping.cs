@@ -128,8 +128,10 @@ public class SpatialMapping : MonoBehaviour
         {
             foreach (GameObject surface in surfaces.Values)
             {
-                surface.GetComponent<MeshRenderer>().enabled = false;
+                GameObject.Destroy(surface);
+                //surface.GetComponent<MeshRenderer>().enabled = false;
             }
+            surfaces.Clear();
             this.gameObject.SetActive(false);
         }
     }

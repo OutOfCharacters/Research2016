@@ -17,3 +17,5 @@ EditorBuildSettings:
     path: Assets/Scenes/SpiderScene.unity
   - enabled: 1
     path: Assets/Scenes/BeeScene.unity
+  - enabled: 1
+    path: Assets/Scenes/End.unity

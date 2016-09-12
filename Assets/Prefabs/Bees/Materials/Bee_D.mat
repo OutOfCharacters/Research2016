@@ -7,9 +7,10 @@ Material:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: Bee_D
-  m_Shader: {fileID: 4800000, guid: 30a212a88e1063a428c85e50b1e427f2, type: 3}
-  m_ShaderKeywords: _EMISSION _NORMALMAP
-  m_LightmapFlags: 1
+  m_Shader: {fileID: 4800000, guid: 06790e211e4a6df409b1e04bc91c4810, type: 3}
+  m_ShaderKeywords: _GLOSSYREFLECTIONS_OFF _NORMALMAP _SPECULARHIGHLIGHTS_OFF _USECOLOR_ON
+    _USEMAINTEX_ON
+  m_LightmapFlags: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}
   m_SavedProperties:
@@ -46,6 +47,12 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - first:
+        name: _EmissionTex
+      second:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
         name: _MainTex
       second:
         m_Texture: {fileID: 2800000, guid: 6247f9be2fbbfc74da2bc00dc31d61e8, type: 3}
@@ -74,6 +81,12 @@ Material:
         name: _BumpScale
       second: 1
     - first:
+        name: _ColorWriteMask
+      second: 15
+    - first:
+        name: _Cull
+      second: 0
+    - first:
         name: _Cutoff
       second: 0.5
     - first:
@@ -87,10 +100,10 @@ Material:
       second: 1
     - first:
         name: _Glossiness
-      second: 0.5
+      second: 0
     - first:
         name: _GlossyReflections
-      second: 1
+      second: 0
     - first:
         name: _Metallic
       second: 0
@@ -111,7 +124,7 @@ Material:
       second: 0
     - first:
         name: _SpecularHighlights
-      second: 1
+      second: 0
     - first:
         name: _SrcBlend
       second: 1
@@ -119,12 +132,27 @@ Material:
         name: _UVSec
       second: 0
     - first:
+        name: _UseBumpMap
+      second: 0
+    - first:
+        name: _UseColor
+      second: 1
+    - first:
+        name: _UseEmissionTex
+      second: 0
+    - first:
+        name: _UseMainTex
+      second: 1
+    - first:
+        name: _ZTest
+      second: 4
+    - first:
         name: _ZWrite
       second: 1
     m_Colors:
     - first:
         name: _Color
-      second: {r: 1, g: 1, b: 0.6509804, a: 1}
+      second: {r: 0.75735295, g: 0.75735295, b: 0.26730102, a: 1}
     - first:
         name: _EmissionColor
       second: {r: 0, g: 0, b: 0, a: 1}

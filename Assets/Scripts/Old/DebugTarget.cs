@@ -12,7 +12,7 @@ public class DebugTarget : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-        newPos = Spider.GetComponent<Wand>().circleCenter;
+        newPos = Spider.GetComponent<WandSpider>().circleCenter;
         this.transform.localPosition = newPos;
 	}
 }
