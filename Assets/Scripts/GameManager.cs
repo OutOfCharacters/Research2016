@@ -269,6 +269,7 @@ public class GameManager : MonoBehaviour {
             vm.showList();
         }
     }
+
     private IEnumerator LinkSounds(AudioSource one, AudioSource two)
     {
         isAnythingPlaying(one);
