@@ -5,21 +5,23 @@ public class WandTest : MonoBehaviour
 {
     //rigidbody of the mouse
     Rigidbody rb;
-    //distance from center of circle to object
-    public float circleDistance;
+    //distance from center of sphere to object
+    public float sphereDistance;
     //radius of circle
     public float radius;
 
     //position of circle
-    public Vector3 circleCenter;
+    public Vector3 sphereCenter;
 
     //displacement vector for wander angle calculations
     Vector3 displacement;
 
-    //wander angle
-    float wanderAngle;
+    //two wander angles, one for y and one for x,z
+    float wanderAngle1;
+    float wanderAngle2;
 
-    //degree to change angle by
+
+    //degree to change angles by
     public float angleChange;
 
     //walls from which we apply force
@@ -27,6 +29,8 @@ public class WandTest : MonoBehaviour
     public Transform wall2;
     public Transform wall3;
     public Transform wall4;
+    public Transform wall5;
+    public Transform wall6;
 
 
     //the force we add to the object
@@ -36,24 +40,18 @@ public class WandTest : MonoBehaviour
     Vector3 counter2;
     Vector3 counter3;
     Vector3 counter4;
+    Vector3 counter5;
+    Vector3 counter6;
 
     //used to change animation blend tree
     Quaternion slerp;
     Quaternion dirQ;
 
 
-    //used for preventing stalling
-
-    Vector3[] previousDirections;
     Animator anim;
-    bool isStopped;
-    bool shouldRotate;
-    bool checkForStall;
 
     //declaring up here improves coroutine performance
     WaitForSeconds pointOne;
-    WaitForSeconds twoPointFive;
-    WaitForSeconds one;
 
     //for the coroutine which adds wall force
     public bool notLevel3 = true;
@@ -67,23 +65,10 @@ public class WandTest : MonoBehaviour
 
         //starts in a random direction(this will be the direction the mouse begins to move in)
         displacement = new Vector3(0, 0, 1);
-        //10 is the number of ticks we check for stalling (ticks of similar position / rotation is default "stalling")
-        previousDirections = new Vector3[10];
-        isStopped = false;
-        shouldRotate = true;
-        checkForStall = false;
         pointOne = new WaitForSeconds(.1f);
-        twoPointFive = new WaitForSeconds(2.5f);
-        one = new WaitForSeconds(1f);
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody>();
 
-        //fill previous directions with random vector3's for the inital IsGoingToStall method
-        for (int ii = 0; ii < previousDirections.Length; ii++)
-        {
-            previousDirections[ii] = Random.onUnitSphere * 100f;
-            previousDirections[ii].y = 0;
-        }
         StartCoroutine(AdjustWallForce());          //Starts calculating the force so that the spider does not hit the wall 
     }
 
@@ -105,8 +90,7 @@ public class WandTest : MonoBehaviour
     {
         drawCircle();
         forceToAdd = drawWanderForce();             //sets the force to be of the correct magnitude and in the direction of the wander angle
-        forceToAdd.y = 0;
-        rb.AddForce(-forceToAdd * 50f);               //adds the force
+        rb.AddForce(-forceToAdd * 50f);             //adds the force
 
     }
 
@@ -121,6 +105,8 @@ public class WandTest : MonoBehaviour
         rb.AddForce(counter2);
         rb.AddForce(counter3);
         rb.AddForce(counter4);
+        rb.AddForce(counter5);
+        rb.AddForce(counter6);
     }
 
     /// <summary>
@@ -129,17 +115,17 @@ public class WandTest : MonoBehaviour
     void drawCircle()
     {
         //makes a circle ahead of the object
-        circleCenter = rb.velocity;
-        circleCenter.Normalize();
-        circleCenter *= circleDistance;
+        sphereCenter = rb.velocity;
+        sphereCenter.Normalize();
+        sphereCenter *= sphereDistance;
 
         displacement *= radius;
-        displacement.z += circleDistance;
+        displacement.z += sphereDistance;
 
         //changes the angle to match the new displacement we just found
-        SetAngle(ref displacement, wanderAngle);
-        //adds (random value - .5f) (angleChange) angle change is set in inspector
-        wanderAngle += (Random.value * angleChange) - (angleChange * .5f);
+        SetAngle1(ref displacement, wanderAngle1);
+        //adds (random value - .5f) (angleChange) ~~~~~~ angle change is set in inspector
+        wanderAngle1 += (Random.value * angleChange) - (angleChange * .5f);
     }
 
     /// <summary>
@@ -147,11 +133,12 @@ public class WandTest : MonoBehaviour
     /// </summary>
     /// <param name="vector"></param>
     /// <param name="angle"></param>
-    void SetAngle(ref Vector3 vector, float angle)
+    void SetAngle1(ref Vector3 vector, float angle)
     {
         float len = vector.magnitude;
         vector.x = Mathf.Cos(angle) * len;
         vector.z = Mathf.Sin(angle) * len;
+        vector.y = Mathf.Sin(angle) * len;
     }
 
     /// <summary>
@@ -161,7 +148,7 @@ public class WandTest : MonoBehaviour
     Vector3 drawWanderForce()
     {
         Vector3 wanderForce;
-        wanderForce = circleCenter + displacement;
+        wanderForce = sphereCenter + displacement;
         if (wanderForce.x > .10f)
             wanderForce.x = .10f;
         if (wanderForce.x < -.10f)
@@ -170,6 +157,10 @@ public class WandTest : MonoBehaviour
             wanderForce.z = -.10f;
         if (wanderForce.z > .10f)
             wanderForce.z = .10f;
+        if (wanderForce.y > .10f)
+            wanderForce.y = .10f;
+        if (wanderForce.y > .10f)
+            wanderForce.y = .10f;
         return wanderForce;
     }
 
@@ -187,6 +178,9 @@ public class WandTest : MonoBehaviour
             float distanceToTarget2 = -transform.localPosition.x + wall2.localPosition.x;
             float distanceToTarget3 = transform.localPosition.z - wall3.localPosition.z;
             float distanceToTarget4 = -transform.localPosition.z + wall4.localPosition.z;
+            float distanceToTarget5 = transform.localPosition.y - wall5.localPosition.y;
+            float distanceToTarget6 = -transform.localPosition.y + wall6.localPosition.y;
+
 
 
 
@@ -198,6 +192,10 @@ public class WandTest : MonoBehaviour
                 distanceToTarget3 = .02f;
             if (distanceToTarget4 < .02f)
                 distanceToTarget4 = .02f;
+            if (distanceToTarget5 < .02f)
+                distanceToTarget5 = .02f;
+            if (distanceToTarget6 < .02f)
+                distanceToTarget6 = .02f;
 
 
 
@@ -206,11 +204,12 @@ public class WandTest : MonoBehaviour
             counter2 = (.05f / distanceToTarget2) * wall2.transform.forward;
             counter3 = (.05f / distanceToTarget3) * wall3.transform.forward;
             counter4 = (.05f / distanceToTarget4) * wall4.transform.forward;
+            counter5 = (.05f / distanceToTarget5) * wall5.transform.forward;
+            counter6 = (.05f / distanceToTarget6) * wall6.transform.forward;
 
 
             // change the counterForce once every .1 seconds
             yield return pointOne;
-            checkForStall = true;
 
 
         }
@@ -223,18 +222,11 @@ public class WandTest : MonoBehaviour
     void RotateToVelocity(float turnSpeed)
     {
         Vector3 dir;
-        //model imported facing backwards so we do not set this to be negative so it faces the right way
-        dir = new Vector3(-rb.velocity.x, 0f, -rb.velocity.z);
-
-        //Feed the current direction into the check for stalling method
-        if (checkForStall)
-        {
-            if (IsGoingToStall(dir) == true)
-                shouldRotate = false;
-        }
+        //model imported facing forwards so we do not set this to be negative like in the spider script
+        dir = new Vector3(rb.velocity.x, rb.velocity.y, rb.velocity.z);
 
         //rotate if velocity is greater than 0
-        if ((Mathf.Abs(dir.x) > 0 || Mathf.Abs(dir.z) > 0) && shouldRotate == true)
+        if ((Mathf.Abs(dir.x) > 0 || Mathf.Abs(dir.z) > 0 || Mathf.Abs(dir.y) > 0))
         {
             //slerps to the direction the mouse is moving
             dirQ = Quaternion.LookRotation(dir);
@@ -242,66 +234,6 @@ public class WandTest : MonoBehaviour
             rb.MoveRotation(slerp);
         }
 
-
-    }
-
-    /// <summary>
-    /// checks to see if the mouse is jamming up against the wall (or sliding down it)
-    /// </summary>
-    /// <param name="currentDirection"></param>
-    bool IsGoingToStall(Vector3 currentDirection)
-    {
-        //cycle through previous directions and step them back;
-        for (int ii = 0; ii < previousDirections.Length - 1; ii++)
-            previousDirections[ii] = previousDirections[ii + 1];
-        //set the end value to the currentDirection
-        previousDirections[previousDirections.Length - 1] = currentDirection;
-
-        Vector3 differenceInDirections = Vector3.zero;
-        for (int ii = 1; ii < previousDirections.Length - 1; ii++)
-        {
-            differenceInDirections.x += Mathf.Abs((previousDirections[ii].x - previousDirections[ii - 1].x));
-            differenceInDirections.z += Mathf.Abs((previousDirections[ii].z - previousDirections[ii - 1].z));
-        }
-
-        //hard coded threshold do decide if the mouse was stationary enough to play the idle animation (.004 without wall force)
-        if (differenceInDirections.x < .004 || differenceInDirections.z < .004)
-        {
-            //keep # of coroutines at 1
-            if (!isStopped)
-            {
-                isStopped = true;
-                //stop the object from moving while we play the idle animation
-                rb.constraints = RigidbodyConstraints.FreezeAll;
-
-                //stop wander force for duration of idle animation
-                StartCoroutine(ChangeAnimations(Vector3.one));
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /// <summary>
-    /// if rotation has not changed in X ticks and transform.x or transform.y 
-    ///  have not changed in X ticks, move to idle animation, then use rootmotion to turn the mouse aruond and restart the wander script
-    /// </summary>
-    /// <param name="temp"></param>
-    /// <returns></returns>
-    IEnumerator ChangeAnimations(Vector3 temp)
-    {
-
-        //let idle animation play for one second
-        yield return one;
-
-        //Re-add constraints
-        shouldRotate = true;
-        rb.constraints = RigidbodyConstraints.None;
-        rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezePositionY;
-
-        //wait for a second before letting the mouse idle again
-        yield return one;
-        isStopped = false;
 
     }
 

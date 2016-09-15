@@ -23,10 +23,12 @@ public class DataStorage : MonoBehaviour
     public bool IsPeaked(string toAdd)
     {
         int temp;
+        Debug.Log(int.TryParse(toAdd, out temp));
+        Debug.Log(temp);
         //turn the string into an int
         if (int.TryParse(toAdd, out temp))
         {
-            //keep the biggest value, highestPpoint or temp
+            //keep the biggest value, highestPoint or temp
             if (highestPoint < temp)
             {
                 highestPoint = temp;
@@ -34,8 +36,8 @@ public class DataStorage : MonoBehaviour
             //if temp was wayyy smaller than highest point, return true
             else if (temp < highestPoint / 4)
             {
+                highestPoint = 0;
                 return true;
-
             }
         }
         return false;

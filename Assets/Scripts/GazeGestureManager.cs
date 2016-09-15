@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.VR.WSA;
 using UnityEngine.VR.WSA.Input;
 
 public class GazeGestureManager : MonoBehaviour
@@ -13,6 +14,9 @@ public class GazeGestureManager : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        //adds a world anchor
+        WorldAnchor anchor = gameObject.AddComponent<WorldAnchor>();
+
         Instance = this;
 
         // Set up a GestureRecognizer to detect Select gestures.

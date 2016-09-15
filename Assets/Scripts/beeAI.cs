@@ -37,6 +37,8 @@ public class beeAI : MonoBehaviour {
 
     public Transform waypoint;
 
+    public Rigidbody rb;
+
     // Use this for initialization
     void Start()
     {
@@ -48,6 +50,7 @@ public class beeAI : MonoBehaviour {
         counter = 0;
         hitEnvironment = false;
         firstCollision = true;
+        rb = GetComponent<Rigidbody>();
     }
 	
 	void FixedUpdate () {
@@ -75,7 +78,7 @@ public class beeAI : MonoBehaviour {
         //Set direction to move towards
         moveDirection = (targetPos - transform.position + toReverse * 1f).normalized;
         //Move's the object
-        transform.Translate(moveDirection * Time.deltaTime * .2f, Space.World);
+        rb.MovePosition(rb.position + moveDirection * Time.fixedDeltaTime * .2f);
     }
 
     /// <summary>
@@ -91,7 +94,7 @@ public class beeAI : MonoBehaviour {
         //Set direction to move towards
         moveDirection = (targetPos - transform.position + toReverse * 2f).normalized;
         //moves the object the opposite direction of the wall
-        transform.Translate((-reverseVector * 2f).normalized * Time.deltaTime * .2f, Space.World);
+        rb.MovePosition(rb.position + (-reverseVector * 2f).normalized * Time.fixedDeltaTime * .2f);
         counter--;
     }
 
@@ -258,6 +261,7 @@ public class beeAI : MonoBehaviour {
         Vector3 temp = new Vector3(waypoint.localPosition.x, 0, waypoint.localPosition.z);
         Vector3 temp2 = new Vector3(transform.localPosition.x, 0, transform.localPosition.z);
         Quaternion rotation = Quaternion.LookRotation(temp - temp2);
-        transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime);
+        //transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.fixedDeltaTime);
+        rb.MoveRotation(Quaternion.Slerp(transform.rotation, rotation, Time.fixedDeltaTime));
     }
 }

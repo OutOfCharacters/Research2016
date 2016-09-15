@@ -381,6 +381,76 @@ Prefab:
       propertyPath: vm
       value: 
       objectReference: {fileID: 1752569209}
+    - target: {fileID: 82000012082767860, guid: 39d906165139dce409c2d3ae26fc6473,
+        type: 2}
+      propertyPath: spreadCustomCurve.m_RotationOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 82000012856220280, guid: 39d906165139dce409c2d3ae26fc6473,
+        type: 2}
+      propertyPath: spreadCustomCurve.m_RotationOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 82000012562874214, guid: 39d906165139dce409c2d3ae26fc6473,
+        type: 2}
+      propertyPath: spreadCustomCurve.m_RotationOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 82000013149238888, guid: 39d906165139dce409c2d3ae26fc6473,
+        type: 2}
+      propertyPath: spreadCustomCurve.m_RotationOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 82000013880316648, guid: 39d906165139dce409c2d3ae26fc6473,
+        type: 2}
+      propertyPath: spreadCustomCurve.m_RotationOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 82000012180811718, guid: 39d906165139dce409c2d3ae26fc6473,
+        type: 2}
+      propertyPath: spreadCustomCurve.m_RotationOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 82000014143034036, guid: 39d906165139dce409c2d3ae26fc6473,
+        type: 2}
+      propertyPath: spreadCustomCurve.m_RotationOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 82000012929524862, guid: 39d906165139dce409c2d3ae26fc6473,
+        type: 2}
+      propertyPath: spreadCustomCurve.m_RotationOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 82000013659919798, guid: 39d906165139dce409c2d3ae26fc6473,
+        type: 2}
+      propertyPath: spreadCustomCurve.m_RotationOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 82000013140059622, guid: 39d906165139dce409c2d3ae26fc6473,
+        type: 2}
+      propertyPath: spreadCustomCurve.m_RotationOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 82000010408466488, guid: 39d906165139dce409c2d3ae26fc6473,
+        type: 2}
+      propertyPath: spreadCustomCurve.m_RotationOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 82000010146584926, guid: 39d906165139dce409c2d3ae26fc6473,
+        type: 2}
+      propertyPath: spreadCustomCurve.m_RotationOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 82000012688759432, guid: 39d906165139dce409c2d3ae26fc6473,
+        type: 2}
+      propertyPath: spreadCustomCurve.m_RotationOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 82000013606146354, guid: 39d906165139dce409c2d3ae26fc6473,
+        type: 2}
+      propertyPath: spreadCustomCurve.m_RotationOrder
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 39d906165139dce409c2d3ae26fc6473, type: 2}
   m_IsPrefabParent: 0

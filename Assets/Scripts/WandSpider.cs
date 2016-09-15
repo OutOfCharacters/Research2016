@@ -52,7 +52,6 @@ public class WandSpider : MonoBehaviour
 
     //declaring up here improves coroutine performance
     WaitForSeconds pointOne;
-    WaitForSeconds twoPointFive;
     WaitForSeconds one;
 
     //for the coroutine which adds wall force
@@ -73,7 +72,6 @@ public class WandSpider : MonoBehaviour
         shouldRotate = true;
         checkForStall = false;
         pointOne = new WaitForSeconds(.1f);
-        twoPointFive = new WaitForSeconds(2.5f);
         one = new WaitForSeconds(1f);
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody>();

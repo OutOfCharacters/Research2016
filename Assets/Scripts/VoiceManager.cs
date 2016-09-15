@@ -7,13 +7,14 @@ using UnityEngine.SceneManagement;
 public class VoiceManager : MonoBehaviour {
 
     //Internal reference to a keywordRecognizer.
-    public bool toContinue = false;
+    public bool toContinue;
     private string response;
-    private string[] oneToOneHundred = new string[102];
+    private string[] responses;
+
     private KeywordRecognizer kr;
     AudioSource auSo;
     public DataStorage ds;
-    public WaitForSeconds thirty = new WaitForSeconds(30f);
+    public WaitForSeconds thirty;
     string addString;
     int minuteCounter;
 
@@ -21,6 +22,11 @@ public class VoiceManager : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+
+        toContinue = false;
+        thirty = new WaitForSeconds(30f);
+
+        responses = new string[107];
         auSo = GetComponent<AudioSource>();
         addString = "";
         minuteCounter = 0;
@@ -28,11 +34,12 @@ public class VoiceManager : MonoBehaviour {
         CreateString();
 
 		//Create a new keywordRecognizer, with the words from one to one hundred
-		kr = new KeywordRecognizer(oneToOneHundred);
+		kr = new KeywordRecognizer(responses);
 
 		//Register OnVoiceCommand to kr's onPhraseRecognized
 		kr.OnPhraseRecognized += OnVoiceCommand;
     }
+
     /// <summary>
     /// starts coroutine so it can be called from another class
     /// </summary>
@@ -63,25 +70,26 @@ public class VoiceManager : MonoBehaviour {
     /// <param name="args"></param>
 	private void OnVoiceCommand(PhraseRecognizedEventArgs args)
 	{
-        if (!args.text.Equals("try again") && !args.text.Equals("ice cream"))
+        int ignore;
+        if (int.TryParse(args.text, out ignore) == true)
         {
             if (!hasResponded)
             {
                 //add the responses to the directory
-                MoveOn(addString + args.text);
+                MoveOn(addString, args.text);
                 hasResponded = true;
             }
 
 
         }
-        else if (!args.text.Equals("ice cream"))
+        else if (args.text.Equals("ice cream"))
         //keyword was "try again", so we wait for a new response
         {
-            auSo.Play();
-        }
-
-        else {
             showList();
+        }
+        else
+        {
+            ds.Add(args.text);
         }
             
 	}
@@ -90,13 +98,15 @@ public class VoiceManager : MonoBehaviour {
     /// adds repsonse to directory and compares it to previous ratings to see if user is ready to move on called by OnVoiceCommand
     /// </summary>
     /// <param name="response"></param>
-    private void MoveOn(string response)
+    private void MoveOn(string addString, string response)
     {
         //check anxiety rating... 
         //compare anxiety rating to highest datapoint that has existed
         //if the newest anxiety rating is higher, update it, if it is some % lower, consider it to have peaked
         //set toContinue to true
-        ds.Add(response);
+
+        ds.Add(addString + response);
+
         if (ds.IsPeaked(response))
         {
             toContinue = true;
@@ -110,13 +120,21 @@ public class VoiceManager : MonoBehaviour {
     /// </summary>
     private void CreateString()
     {
-        for (int i = 0; i < oneToOneHundred.Length - 2; i++)
+        //keyword recognizer will break if the added array has a value that is null
+        responses[0] = "Bwuh";
+
+        for (int i = 1; i < responses.Length - 7; i++)
         {
-            oneToOneHundred[i] = i.ToString();
+            responses[i] = i.ToString();
         }
         //it doesn't currently deal with the "try again" situation, I guess I can just add it to the end of the oneToOnehundredArray..
-        oneToOneHundred[oneToOneHundred.Length - 2] = "try again";
-        oneToOneHundred[oneToOneHundred.Length - 1] = "ice cream";
+        responses[responses.Length - 7] = "very real";
+        responses[responses.Length - 6] = "somewhat real";
+        responses[responses.Length - 5] = "slightly real";
+        responses[responses.Length - 4] = "not at all real";
+        responses[responses.Length - 3] = "entirely real";
+        responses[responses.Length - 2] = "try again";
+        responses[responses.Length - 1] = "ice cream";
     }
 
     /// <summary>

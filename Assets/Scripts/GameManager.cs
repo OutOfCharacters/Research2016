@@ -46,8 +46,8 @@ public class GameManager : MonoBehaviour {
         flyingBee = aSources[5];
         mouseAttention = aSources[6];
         mouseColor = aSources[7];
-        mouseSqueaking = aSources[8];
-        repeat = aSources[9];
+        mouseSqueaking = aSources[8];           // no mouse squeak
+        repeat = aSources[9];                   // not used
         spiderAttention = aSources[10];
         spiderColor = aSources[11];
         thanks = aSources[12];
@@ -72,19 +72,28 @@ public class GameManager : MonoBehaviour {
         //run once in the background
         while (true)
         {
-            //every minute we ask for anxiety rating
-            if (!isAnythingPlaying(anxietyRating))
-                vm.StartListening();
-            yield return thirty;
-            messageCounter += 30f;
-            //every other 30 seconds we play a recording
-            MessageHandler(messageCounter);
+            if (level != 0)
+            {
+                //every minute we ask for anxiety rating
+                if (!isAnythingPlaying(anxietyRating))
+                    vm.StartListening();
+                yield return thirty;
+                messageCounter += 30f;
+                //every other 30 seconds we play a recording
+                MessageHandler(messageCounter);
 
-            yield return thirty;
-            messageCounter += 30f;
-            //reset the message handler to 0
-            if (messageCounter == 180)
-                messageCounter = 0;
+                yield return thirty;
+                messageCounter += 30f;
+                //reset the message handler to 0
+                if (messageCounter == 180)
+                    messageCounter = 0;
+            }
+            else
+            {
+                if (!isAnythingPlaying(anxietyRating))
+                    vm.StartListening();
+                yield return thirty;
+            }
         }
     }
     
