@@ -1,0 +1,62 @@
+#Instructions
+
+Username: Diego
+Password: Changeme123
+
+Follow hololens setup guide
+https://developer.microsoft.com/en-us/windows/holographic/documentation
+>
+https://developer.microsoft.com/en-us/windows/holographic/install_the_tools
+>
+https://github.com/drv14/Research2016
+
+Clone or Download> Download ZIP
+
+Extract ZIP
+
+open your Unity for HoloLens and open project tothe project file
+
+It will build the project
+
+When it opens>
+
+File > Build Settings > Windows Store >
+
+Put scene "Main" at the top if it is not already
+
+SDK: Universal 10
+UWP Build Type: D3D
+Build and Run on: Local Machine
+
+Click "player settings" which should open up in the inspector
+Player Settings>
+Click "settings for Windows Store" icon if its not already selected
+
+Other Settings>
+Check Virtual Reality Supported and Virtual Reality SDKs should say Windows Holographic
+
+Publishing Settings>
+Check Internet Client, Microphone, SpatialPerception
+
+Back on the "File> build settings" pop-up" click "Build"
+
+Make a new folder named "Builds"
+Select Folder "Builds"
+
+Browse to Research2016/Builds/PsychProj2016.sln and open it
+
+Note: Visual Studio must be set up following the instructions found here>
+
+https://developer.microsoft.com/en-us/windows/holographic/using_visual_studio
+
+Change it to 
+
+Release - x86 - Remote Machine/Device
+
+(Remote Machine will need the IP, Device if the lens is plugged in)
+
+Run
+
+Note: Visual Studio must be set up following the instructions found here>
+
+https://developer.microsoft.com/en-us/windows/holographic/using_visual_studio
